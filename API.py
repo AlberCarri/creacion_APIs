@@ -42,34 +42,81 @@ def getDisco(name_disk):
     else:
         return jsonify({'message': 'Producto no encontrado'})
 
+#@app.route('/Discos/<string:genero_disk>')
+#def getDisco_genero(genero_disk):
+#    encontrado=False
+#    for Disc in Discos:
+#        print(Disc['genero'])
+#        if Disc['genero'].lower() == genero_disk.lower():
+#            DiscosFound=Disc
+#            encontrado=True
+#            
+#    if encontrado==True:  
+#    #print(type(DiscosFound))
+#        return jsonify({'Disc': DiscosFound})
+#    else:
+#        return jsonify({'message': 'Producto no encontrado'})
 
-#En esta ocasión lo que se busca, es mostrar los discos que se den en un año determinado
-#Código viejo, que uso para comparar
-#@app.route('/Discos/<string:product_anyo>')
-#def getAnyo(product_anyo):
-#
-#   for anyo in Discos:
-#        if anyo['año_publicacion'] == product_anyo.lower():
-#            anyoFound=anyo
-#    print(type(anyoFound))
-#    if(len(anyoFound) > 0):
-#        return jsonify({'anyo': anyoFound})
-#    return jsonify({'message': 'Producto no encontrado'})
 
-@app.route('/Discos/<string:genero_disk>')
-def getDisco_genero(genero_disk):
+#Ahora intento crear una aplicación que me permita añadir datos a mi API, en este caso Discos
+#A la hora de intentar agregar el disco, se produce un error, y me sale el el mensaje de que no se pudo agregar
+#de manera correcta el disco
+@app.route("/Discos", methods=['POST'])
+def addDisco():
+    disco_nuevo = {
+            'titulo': request.json['titulo'],
+            'artista': request.json['artista'],
+            'pais': request.json['pais'],
+            'genero': request.json['genero'],
+            'anyo_publicacion': request.json['anyo_publicacion']
+    }
+
+    Discos.append(disco_nuevo)
+    return jsonify({'menssage': 'Producto no agregado correctamente'})
+
+#Ahora lo que se va a intenar es actualizar un dato, para ello recibo un dato especifico, como puede ser el titulo
+#Igual que antes, me vuelve ha salir un error
+@app.route('/Discos/<string:name_disk>', methods=['PUT'])
+def editDisk(name_disk):
     encontrado=False
     for Disco in Discos:
-        print(Disco['genero'])
-        if Disco['genero'].lower() == genero_disk.lower():
+        print(Disco['titulo'])
+        if Disco['titulo'].lower() == name_disk.lower():
             DiscosFound=Disco
             encontrado=True
-            
-    if encontrado==True:  
-    #print(type(DiscosFound))
-        return jsonify({'Disco': DiscosFound})
+
+    if encontrado==True:
+        DiscosFound[0]['titulo'] = request.json['titulo']
+        DiscosFound[0]['artista'] = request.json['artista']
+        DiscosFound[0]['pais'] = request.json['pais']
+        DiscosFound[0]['genero'] = request.json['genero']
+        DiscosFound[0]['anyo_publicacion'] = request.json['anyo_publicacion']
+        return jsonify({
+            'message': 'Producto actualizado de manera correcta',
+            'Disco': DiscosFound[0]
+        })
     else:
         return jsonify({'message': 'Producto no encontrado'})
 
+#Ahora diseño una forma para borrar datos de la API
+
+@app.route('/Discos/<string:name_disk>', methods=['DELETE'])
+def borrarDisco(name_disk):
+    encontrado=False
+    for Disco in Discos:
+        print(Disco['titulo'])
+        if Disco['titulo'].lower() == name_disk.lower():
+            DiscosFound=Disco
+            encontrado=True
+    if encontrado==True:
+        Discos.remove(DiscosFound[0])
+        return jsonify({
+            'message': 'Producto borrado correctamente',
+            'Disco': Discos
+        })
+
 if __name__=='__main__':
     app.run(debug=True, port=5000)
+
+#He intendado hacerlo como lo hicistes cuando lo explicaste y como lo hace
+#el videotutorial, pero no me ha salido
